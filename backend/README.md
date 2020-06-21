@@ -52,6 +52,14 @@ Setting the `FLASK_ENV` variable to `development` will detect file changes and r
 
 Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` directory and the `__init__.py` file to find the application. 
 
+To execute tests, run:
+```bash 
+dropdb trivia_test
+createdb trivia_test
+psql trivia_test < trivia.psql
+python test_flaskr.py
+```
+
 ## Tasks
 
 One note before you delve into your tasks: for each endpoint you are expected to define the endpoint and response data. The frontend will be a plentiful resource because it is set up to expect certain endpoints and response data formats already. You should feel free to specify endpoints in your own way; if you do so, make sure to update the frontend or you will get some unexpected behavior. 
@@ -66,35 +74,235 @@ One note before you delve into your tasks: for each endpoint you are expected to
 8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
 9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
 
-REVIEW_COMMENT
+## API Documentation
+
+Below are an explanation for all endpoints. What methods are used, how to work with them, expected responses.
+
+All APIs can only be accessed when `flask` is run locally. To make requests to the API via `curl` or `postman`, you need to use the default domain on which the flask server is running.
+**_http://127.0.0.1:5000/_**
+
+### 1. GET /categories
 ```
-This README is missing documentation of your endpoints. Below is an example for your endpoint to get all categories. Please use it as a reference for creating your documentation and resubmit your code. 
-
-Endpoints
-GET '/categories'
-GET ...
-POST ...
-DELETE ...
-
 GET '/categories'
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-{'1' : "Science",
-'2' : "Art",
-'3' : "Geography",
-'4' : "History",
-'5' : "Entertainment",
-'6' : "Sports"}
-
+{
+    "categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography",
+        "4": "History",
+        "5": "Entertainment",
+        "6": "Sports"
+    },
+    "success": true
+}
 ```
 
-
-## Testing
-To run the tests, run
+### 2. GET /questions
 ```
-dropdb trivia_test
-createdb trivia_test
-psql trivia_test < trivia.psql
-python test_flaskr.py
+GET '/questions'
+- Fetches a dictionary of questions in which the keys are the ids and the value is the corresponding string of the category
+- Request Arguments: None
+- Returns: An object with a single key, questions, that contains a object of id: category_string key:value pairs. 
+{
+    "categories": {
+        "1": "Science",
+        "2": "Art",
+        "3": "Geography",
+        "4": "History",
+        "5": "Entertainment",
+        "6": "Sports"
+    },
+    "questions": [
+        {
+            "answer": "Apollo 13",
+            "category": 5,
+            "difficulty": 4,
+            "id": 2,
+            "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+        },
+        {
+            "answer": "Tom Cruise",
+            "category": 5,
+            "difficulty": 4,
+            "id": 4,
+            "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+        },
+        {
+            "answer": "Maya Angelou",
+            "category": 4,
+            "difficulty": 2,
+            "id": 5,
+            "question": "Whose autobiography is entitled 'I Know Why the Caged Bird Sings'?"
+        },
+        {
+            "answer": "Edward Scissorhands",
+            "category": 5,
+            "difficulty": 3,
+            "id": 6,
+            "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+        },
+        {
+            "answer": "Muhammad Ali",
+            "category": 4,
+            "difficulty": 1,
+            "id": 9,
+            "question": "What boxer's original name is Cassius Clay?"
+        },
+        {
+            "answer": "Brazil",
+            "category": 6,
+            "difficulty": 3,
+            "id": 10,
+            "question": "Which is the only team to play in every soccer World Cup tournament?"
+        },
+        {
+            "answer": "Uruguay",
+            "category": 6,
+            "difficulty": 4,
+            "id": 11,
+            "question": "Which country won the first ever soccer World Cup in 1930?"
+        },
+        {
+            "answer": "George Washington Carver",
+            "category": 4,
+            "difficulty": 2,
+            "id": 12,
+            "question": "Who invented Peanut Butter?"
+        },
+        {
+            "answer": "Lake Victoria",
+            "category": 3,
+            "difficulty": 2,
+            "id": 13,
+            "question": "What is the largest lake in Africa?"
+        },
+        {
+            "answer": "The Palace of Versailles",
+            "category": 3,
+            "difficulty": 3,
+            "id": 14,
+            "question": "In which royal palace would you find the Hall of Mirrors?"
+        }
+    ],
+    "success": true,
+    "total_questions": 19
+}
+```
+
+### 3. POST /questions
+```
+POST '/questions'
+- Posting JSON body to create new question
+- Request:
+{
+   "question":"new question?",
+   "category":"1",
+   "answer":"Yes!",
+   "difficulty":1
+}
+- Returns: 
+{
+    "created": 26,
+    "success": true
+}
+```
+
+### 4. DELETE /questions/<question_id>
+```
+DELETE '/questions/<question_id>'
+- Deletes a specific question based on given id
+- Request:
+    question_id
+- Returns: 
+{
+    "deleted": "26",
+    "success": true
+}
+```
+
+### 4. POST /questions/search
+```
+POST '/questions/search'
+- Searches for a specific question based on given search term
+- Request:
+    {"searchTerm" : "world"}
+- Returns: 
+{
+    "questions": [
+        {
+            "answer": "Brazil",
+            "category": 6,
+            "difficulty": 3,
+            "id": 10,
+            "question": "Which is the only team to play in every soccer World Cup tournament?"
+        },
+        {
+            "answer": "Uruguay",
+            "category": 6,
+            "difficulty": 4,
+            "id": 11,
+            "question": "Which country won the first ever soccer World Cup in 1930?"
+        }
+    ],
+    "success": true,
+    "total_questions": 2
+}
+```
+
+### 5. GET /categories/<category_id>/questions
+```
+GET '/categories/<category_id>/questions'
+- Searches for all questions based on specific category
+- Request:
+    category_id
+- Returns: 
+{
+    "questions": [
+        {
+            "answer": "The Liver",
+            "category": 1,
+            "difficulty": 4,
+            "id": 20,
+            "question": "What is the heaviest organ in the human body?"
+        },
+        {
+            "answer": "Alexander Fleming",
+            "category": 1,
+            "difficulty": 3,
+            "id": 21,
+            "question": "Who discovered penicillin?"
+        },
+        {
+            "answer": "Blood",
+            "category": 1,
+            "difficulty": 4,
+            "id": 22,
+            "question": "Hematology is a branch of medicine involving the study of what?"
+        }
+    ],
+    "success": true,
+    "total_questions": 3
+}
+```
+
+### 6. POST /quizzes
+```
+POST '/quizzes'
+- Play the trivia game
+- Request:
+    {"previous_questions" : [], "quiz_category" : {"type" : "Sports", "id" : "6"}}
+- Returns: 
+{
+    "question": {
+        "answer": "Uruguay",
+        "category": 6,
+        "difficulty": 4,
+        "id": 11,
+        "question": "Which country won the first ever soccer World Cup in 1930?"
+    },
+    "success": true
+}
 ```
